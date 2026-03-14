@@ -5,21 +5,32 @@ export default function HomePage() {
     <main className="page-shell">
       <section className="hero">
         <div className="hero-copy">
-          <span className="eyebrow">StateShift</span>
-          <h1>Semantic change-point search for long videos.</h1>
+          <span className="eyebrow">StateShift / Gemini-Powered Video Search</span>
+          <h1>Find the exact moment reality shifts.</h1>
           <p>
-            Upload a video, describe the event in natural language, and let the
-            app localize the transition using sampled frames plus Gemini-guided
-            binary search.
+            StateShift turns a long video into a semantic search problem. Upload a clip,
+            describe the event in plain English, and the app will localize the state change
+            using sampled frames, Gemini reasoning, and efficient boundary search.
           </p>
+          <div className="hero-strip">
+            <div className="hero-chip">
+              <span className="hero-chip-label">Search style</span>
+              <strong>Bracket + binary</strong>
+            </div>
+            <div className="hero-chip">
+              <span className="hero-chip-label">Model</span>
+              <strong>Gemini structured vision</strong>
+            </div>
+          </div>
         </div>
         <div className="hero-panel">
-          <div className="hero-badge">Demo MVP</div>
+          <div className="hero-badge">Hackathon-ready MVP</div>
+          <div className="hero-panel-title">What the app is optimized for</div>
           <ul className="hero-points">
-            <li>Uploads + local storage</li>
-            <li>ffmpeg sampled frame extraction</li>
-            <li>Gemini structured frame classification</li>
-            <li>Efficient transition localization trace</li>
+            <li>Long-form clips with one clear transition</li>
+            <li>Minimal Gemini calls instead of exhaustive scanning</li>
+            <li>Before/after visual evidence with explanations</li>
+            <li>Efficiency stats and a full search trace</li>
           </ul>
         </div>
       </section>
