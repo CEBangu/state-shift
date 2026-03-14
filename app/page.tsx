@@ -43,7 +43,7 @@ export default function HomePage() {
                   </div>
                   <div className="hero-chip">
                     <span className="hero-chip-label">Speed</span>
-                    <strong>Logarithmic</strong>
+                    <strong>Super Fast</strong>
                   </div>
                 </div>
               </div>
