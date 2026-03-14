@@ -116,7 +116,7 @@ export async function POST(request: Request) {
       },
     });
 
-    const linearScanGeminiCalls = sampledFrames.length;
+    const linearScanGeminiCalls = Math.min(sampledFrames.length, result.transitionSampleIndex + 1);
     const geminiCallsSaved = Math.max(0, linearScanGeminiCalls - result.totalGeminiCalls);
     const geminiReductionRatio =
       linearScanGeminiCalls > 0 ? Number((geminiCallsSaved / linearScanGeminiCalls).toFixed(3)) : 0;

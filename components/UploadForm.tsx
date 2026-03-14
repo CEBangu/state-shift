@@ -240,7 +240,6 @@ export function UploadForm() {
               <span />
             </div>
           </div>
-          <p>{progress?.detail ?? "Waiting for the backend to accept the job."}</p>
           <div className="status-meta">
             <span className="pill">Elapsed {elapsedSeconds}s</span>
             <span className="pill">Smart search, not linear scan</span>

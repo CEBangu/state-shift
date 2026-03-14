@@ -54,7 +54,7 @@ export function ResultView({ result }: ResultViewProps) {
             <span className="metric-value">{result.totalGeminiCalls}</span>
           </div>
           <div className="metric">
-            <span className="metric-label">Linear Scan</span>
+            <span className="metric-label">Linear Scan Alternative</span>
             <span className="metric-value">{result.linearScanGeminiCalls}</span>
           </div>
         </div>
@@ -64,10 +64,10 @@ export function ResultView({ result }: ResultViewProps) {
             <span className="pill">Efficiency check</span>
             <h3>How much work did the search avoid?</h3>
             <p>
-              A linear scan over every sampled frame would have needed{" "}
+              A naive forward linear scan would likely have needed{" "}
               <strong>{result.linearScanGeminiCalls}</strong> Gemini calls. The search used{" "}
               <strong>{result.totalGeminiCalls}</strong>, saving{" "}
-              <strong>{result.geminiCallsSaved}</strong> calls across{" "}
+              <strong>{result.geminiCallsSaved}</strong> calls before reaching the boundary inside{" "}
               <strong>{result.totalSampledFrames}</strong> sampled frames.
             </p>
           </div>
