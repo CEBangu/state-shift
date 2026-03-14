@@ -20,3 +20,6 @@ out/
 
 # App storage
 storage/
+
+# apple
+.DS_Store
