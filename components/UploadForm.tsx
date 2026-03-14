@@ -1,9 +1,9 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 
 import { ResultView } from "@/components/ResultView";
-import { TransitionResult } from "@/lib/types";
+import { AnalyzeProgress, ProgressPhase, TransitionResult } from "@/lib/types";
 
 const DEFAULT_QUERY = "Find when the bike disappears";
 
@@ -12,29 +12,18 @@ type AnalyzeError = {
 };
 
 const PROGRESS_STAGES = [
-  {
-    title: "Saving the clip",
-    body: "Parking the upload in local storage so the backend can work on it.",
-  },
-  {
-    title: "Cutting frames",
-    body: "Sampling the video with ffmpeg instead of staring at every frame.",
-  },
-  {
-    title: "Briefing Gemini",
-    body: "Sending only selected scout frames to Gemini with the event prompt.",
-  },
-  {
-    title: "Hunting the boundary",
-    body: "Bracketing the semantic change, then tightening it with binary search.",
-  },
-  {
-    title: "Sanity-checking the edge",
-    body: "Looking around the boundary for cleaner before/after evidence.",
-  },
+  { phase: "saving", title: "Saving the clip", body: "Parking the upload in local storage so the backend can work on it." },
+  { phase: "extracting", title: "Cutting frames", body: "Sampling the video with ffmpeg instead of staring at every frame." },
+  { phase: "classifying", title: "Briefing Gemini", body: "Sending selected scout frames to Gemini with the event prompt." },
+  { phase: "searching", title: "Hunting the boundary", body: "Bracketing the semantic change, then tightening it with binary search." },
+  { phase: "verifying", title: "Sanity-checking the edge", body: "Looking around the boundary for cleaner before/after evidence." },
 ] as const;
 
-function isAnalyzeError(payload: TransitionResult | AnalyzeError): payload is AnalyzeError {
+type AnalyzeSuccess = TransitionResult & {
+  jobId: string;
+};
+
+function isAnalyzeError(payload: AnalyzeSuccess | AnalyzeError): payload is AnalyzeError {
   return "error" in payload;
 }
 
@@ -46,12 +35,14 @@ export function UploadForm() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<TransitionResult | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [progressStepIndex, setProgressStepIndex] = useState(0);
+  const [progress, setProgress] = useState<AnalyzeProgress | null>(null);
+  const pollIntervalRef = useRef<number | null>(null);
+
+  const activeProgressPhase: ProgressPhase | null = progress?.phase ?? null;
 
   useEffect(() => {
     if (!isAnalyzing) {
       setElapsedSeconds(0);
-      setProgressStepIndex(0);
       return;
     }
 
@@ -59,21 +50,71 @@ export function UploadForm() {
     const timer = window.setInterval(() => {
       const elapsed = Math.floor((Date.now() - startedAt) / 1000);
       setElapsedSeconds(elapsed);
-      setProgressStepIndex(Math.min(PROGRESS_STAGES.length - 1, Math.floor(elapsed / 3)));
     }, 250);
 
     return () => window.clearInterval(timer);
   }, [isAnalyzing]);
+
+  useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current) {
+        window.clearInterval(pollIntervalRef.current);
+      }
+    };
+  }, []);
 
   const visibleStages = useMemo(
     () =>
       PROGRESS_STAGES.map((stage, index) => ({
         ...stage,
         state:
-          index < progressStepIndex ? "done" : index === progressStepIndex ? "active" : "waiting",
+          activeProgressPhase === null
+            ? index === 0
+              ? "active"
+              : "waiting"
+            : stage.phase === activeProgressPhase
+              ? "active"
+              : PROGRESS_STAGES.findIndex((candidate) => candidate.phase === activeProgressPhase) > index
+                ? "done"
+                : "waiting",
       })),
-    [progressStepIndex],
+    [activeProgressPhase],
   );
+
+  function startPolling(jobId: string) {
+    if (pollIntervalRef.current) {
+      window.clearInterval(pollIntervalRef.current);
+    }
+
+    const poll = async () => {
+      try {
+        const response = await fetch(`/api/analyze/${jobId}/status`, {
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const payload = (await response.json()) as AnalyzeProgress;
+        setProgress(payload);
+
+        if (payload.phase === "complete" || payload.phase === "error") {
+          if (pollIntervalRef.current) {
+            window.clearInterval(pollIntervalRef.current);
+            pollIntervalRef.current = null;
+          }
+        }
+      } catch {
+        // Ignore transient polling failures during analysis.
+      }
+    };
+
+    void poll();
+    pollIntervalRef.current = window.setInterval(() => {
+      void poll();
+    }, 1000);
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -86,9 +127,14 @@ export function UploadForm() {
     setIsAnalyzing(true);
     setError(null);
     setResult(null);
+    setProgress(null);
 
     try {
+      const jobId = crypto.randomUUID();
+      startPolling(jobId);
+
       const formData = new FormData();
+      formData.append("jobId", jobId);
       formData.append("video", videoFile);
       formData.append("query", query);
       formData.append("sampleRate", sampleRate);
@@ -98,7 +144,7 @@ export function UploadForm() {
         body: formData,
       });
 
-      const payload = (await response.json()) as TransitionResult | AnalyzeError;
+      const payload = (await response.json()) as AnalyzeSuccess | AnalyzeError;
 
       if (!response.ok || isAnalyzeError(payload)) {
         throw new Error(isAnalyzeError(payload) ? payload.error : "Analysis failed.");
@@ -108,6 +154,10 @@ export function UploadForm() {
     } catch (submissionError) {
       setError(submissionError instanceof Error ? submissionError.message : "Analysis failed.");
     } finally {
+      if (pollIntervalRef.current) {
+        window.clearInterval(pollIntervalRef.current);
+        pollIntervalRef.current = null;
+      }
       setIsAnalyzing(false);
     }
   }
@@ -182,7 +232,7 @@ export function UploadForm() {
           <div className="status-header">
             <div>
               <span className="pill">In flight</span>
-              <h3>{PROGRESS_STAGES[progressStepIndex]?.title}</h3>
+              <h3>{progress?.title ?? "Starting analysis"}</h3>
             </div>
             <div className="status-orbit" aria-hidden="true">
               <span />
@@ -190,10 +240,19 @@ export function UploadForm() {
               <span />
             </div>
           </div>
-          <p>{PROGRESS_STAGES[progressStepIndex]?.body}</p>
+          <p>{progress?.detail ?? "Waiting for the backend to accept the job."}</p>
           <div className="status-meta">
             <span className="pill">Elapsed {elapsedSeconds}s</span>
             <span className="pill">Smart search, not linear scan</span>
+            {typeof progress?.geminiCalls === "number" ? (
+              <span className="pill">Gemini calls {progress.geminiCalls}</span>
+            ) : null}
+            {typeof progress?.currentSampleIndex === "number" ? (
+              <span className="pill">Sample {progress.currentSampleIndex}</span>
+            ) : null}
+            {typeof progress?.totalSampledFrames === "number" ? (
+              <span className="pill">{progress.totalSampledFrames} sampled frames</span>
+            ) : null}
           </div>
           <div className="status-steps">
             {visibleStages.map((stage, index) => (

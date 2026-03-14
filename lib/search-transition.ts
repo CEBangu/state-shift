@@ -12,6 +12,8 @@ import {
 type SearchInput = {
   sampledFrames: FrameMetadata[];
   query: string;
+  onPhaseChange?: (phase: "classifying" | "searching" | "verifying", detail: string) => void;
+  onGeminiCall?: (sampleIndex: number, totalCalls: number) => void;
 };
 
 type DecisivePoint = {
@@ -264,16 +266,28 @@ function toClassifiedFrame(point: DecisivePoint): ClassifiedFrame {
 export async function searchTransition({
   sampledFrames,
   query,
+  onPhaseChange,
+  onGeminiCall,
 }: SearchInput): Promise<TransitionSearchResult> {
   if (sampledFrames.length < 2) {
     throw new Error("Need at least two sampled frames to localize a transition.");
   }
 
-  const classifier = new GeminiFrameClassifier(query);
+  const classifier = new GeminiFrameClassifier(query, {
+    onClassifyStart: (frame, currentCalls) => {
+      onGeminiCall?.(frame.sampleIndex, currentCalls);
+    },
+    onClassifyComplete: (frame, nextCalls) => {
+      onGeminiCall?.(frame.sampleIndex, nextCalls);
+    },
+  });
   const trace: SearchTraceEntry[] = [];
 
+  onPhaseChange?.("classifying", "Comparing the endpoints to establish an initial bracket.");
   const bracket = await findBracket(sampledFrames, classifier, trace);
+  onPhaseChange?.("searching", "Binary-searching the sampled frames inside the bracket.");
   const narrowed = await binarySearchTransition(sampledFrames, classifier, trace, bracket.before, bracket.after);
+  onPhaseChange?.("verifying", "Re-checking nearby sampled frames around the detected edge.");
   const verified = await verifyBoundary(sampledFrames, classifier, trace, narrowed.before, narrowed.after);
 
   const beforeFrame = toClassifiedFrame(verified.before);

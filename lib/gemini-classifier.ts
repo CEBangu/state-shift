@@ -125,6 +125,11 @@ type CachedEntry = {
   trace: SearchTraceEntry;
 };
 
+type GeminiFrameClassifierOptions = {
+  onClassifyStart?: (frame: FrameMetadata, currentCalls: number) => void;
+  onClassifyComplete?: (frame: FrameMetadata, nextCalls: number, classification: FrameClassification) => void;
+};
+
 export class GeminiFrameClassifier {
   private readonly client = new GoogleGenAI({
     apiKey: getGeminiApiKey(),
@@ -135,7 +140,10 @@ export class GeminiFrameClassifier {
   private readonly seenTrace = new Set<number>();
   private totalCalls = 0;
 
-  constructor(private readonly query: string) {}
+  constructor(
+    private readonly query: string,
+    private readonly options: GeminiFrameClassifierOptions = {},
+  ) {}
 
   getCallCount(): number {
     return this.totalCalls;
@@ -147,6 +155,8 @@ export class GeminiFrameClassifier {
     if (cached) {
       return cached.classification;
     }
+
+    this.options.onClassifyStart?.(frame, this.totalCalls);
 
     const imageBytes = await readFile(frame.imagePath);
     const response = await this.client.models.generateContent({
@@ -185,6 +195,7 @@ export class GeminiFrameClassifier {
       trace,
     });
     this.totalCalls += 1;
+    this.options.onClassifyComplete?.(frame, this.totalCalls, classification);
 
     return classification;
   }

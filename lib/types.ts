@@ -45,3 +45,25 @@ export type TransitionSearchResult = Omit<
   TransitionResult,
   "totalSampledFrames" | "linearScanGeminiCalls" | "geminiCallsSaved" | "geminiReductionRatio"
 >;
+
+export type ProgressPhase =
+  | "queued"
+  | "saving"
+  | "extracting"
+  | "classifying"
+  | "searching"
+  | "verifying"
+  | "complete"
+  | "error";
+
+export type AnalyzeProgress = {
+  jobId: string;
+  phase: ProgressPhase;
+  title: string;
+  detail: string;
+  updatedAt: number;
+  geminiCalls: number;
+  currentSampleIndex?: number;
+  totalSampledFrames?: number;
+  error?: string;
+};
