@@ -101,10 +101,7 @@ img {
 }
 
 .hero-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.85fr);
-  align-items: start;
-  gap: 24px;
+  display: block;
 }
 
 .hero-copy::after,
@@ -142,22 +139,43 @@ img {
 
 .hero-brand {
   color: var(--accent);
-  font-size: clamp(1.05rem, 2.2vw, 1.45rem);
+  font-size: clamp(2.1rem, 5vw, 3.7rem);
 }
 
 .hero-subbrand {
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: 1rem;
 }
 
 .hero-copy {
   padding: 38px;
 }
 
+.hero-copy-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.82fr);
+  gap: 28px;
+  align-items: stretch;
+}
+
+.hero-copy-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 26px;
+  min-width: 0;
+}
+
+.hero-copy-top {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
 .hero-copy h1 {
   margin: 0 0 16px;
   max-width: 10ch;
-  font-size: clamp(3.3rem, 7vw, 6.8rem);
+  font-size: clamp(2.7rem, 5.5vw, 5.25rem);
   line-height: 0.92;
   letter-spacing: -0.06em;
 }
@@ -168,6 +186,56 @@ img {
   color: var(--muted);
   font-size: 1.07rem;
   line-height: 1.7;
+}
+
+.hero-demo-cta {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 22px;
+  border-radius: 24px;
+  border: 1px solid rgba(130, 168, 255, 0.15);
+  background:
+    linear-gradient(180deg, rgba(13, 21, 40, 0.72) 0%, rgba(8, 13, 26, 0.88) 100%);
+}
+
+.hero-demo-cta strong {
+  display: block;
+  margin-top: 8px;
+  font-size: clamp(1.3rem, 2vw, 1.8rem);
+  line-height: 1.05;
+}
+
+.hero-demo-cta p {
+  margin-top: 10px;
+  max-width: 28rem;
+  font-size: 0.98rem;
+  line-height: 1.6;
+}
+
+.hero-demo-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 148px;
+  padding: 13px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(110, 231, 255, 0.34);
+  background: linear-gradient(135deg, rgba(110, 231, 255, 0.16) 0%, rgba(134, 168, 255, 0.12) 100%);
+  color: var(--ink);
+  font-family: var(--font-mono), monospace;
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: transform 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.hero-demo-link:hover {
+  transform: translateY(-1px);
+  border-color: rgba(110, 231, 255, 0.5);
+  box-shadow: 0 10px 24px rgba(110, 231, 255, 0.14);
 }
 
 .eyebrow,
@@ -188,14 +256,12 @@ img {
 }
 
 .hero-strip {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 14px;
-  margin-top: 26px;
 }
 
 .hero-chip {
-  min-width: 220px;
   padding: 16px 18px;
   border-radius: 22px;
   border: 1px solid rgba(124, 164, 255, 0.16);
@@ -225,13 +291,25 @@ img {
 }
 
 .hero-panel {
-  padding: 28px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 20px;
-  max-width: 420px;
-  justify-self: end;
+  gap: 18px;
+  min-width: 0;
+  height: 100%;
+  justify-content: space-between;
+  border-radius: 26px;
+  border: 1px solid rgba(128, 166, 255, 0.16);
+  background: linear-gradient(180deg, rgba(14, 22, 41, 0.76) 0%, rgba(8, 13, 25, 0.86) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+}
+
+.hero-panel-copy {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.68;
 }
 
 .hero-points {
@@ -239,7 +317,22 @@ img {
   margin: 0;
   padding-left: 22px;
   color: var(--muted);
-  line-height: 1.8;
+  line-height: 1.7;
+}
+
+.hero-panel-callout {
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(14, 22, 41, 0.92) 0%, rgba(10, 15, 28, 0.94) 100%);
+  border: 1px solid rgba(128, 166, 255, 0.16);
+}
+
+.hero-panel-callout strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 1rem;
+  line-height: 1.45;
 }
 
 .hero-panel-grid {
@@ -628,12 +721,14 @@ img {
 
 @media (max-width: 960px) {
   .hero-grid,
+  .hero-copy-grid,
   .form-grid,
   .metrics,
   .comparison-panel,
   .evidence-grid,
   .status-steps,
-  .hero-panel-grid {
+  .hero-panel-grid,
+  .hero-strip {
     grid-template-columns: 1fr;
   }
 
@@ -641,9 +736,23 @@ img {
     padding: 30px;
   }
 
+  .hero-demo-cta {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .hero-demo-link {
+    width: 100%;
+  }
+
   .hero-copy h1 {
     max-width: none;
     font-size: clamp(2.8rem, 14vw, 4.6rem);
+  }
+
+  .hero-panel {
+    height: auto;
+    justify-content: flex-start;
   }
 
   .actions {

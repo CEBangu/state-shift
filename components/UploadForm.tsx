@@ -166,7 +166,6 @@ export function UploadForm() {
     <>
       <section className="card">
         <div>
-          <span className="pill">Phase-ready MVP</span>
           <h2>Run semantic event localization</h2>
           <p>
             This demo extracts sampled frames, classifies only selected frames with Gemini,
