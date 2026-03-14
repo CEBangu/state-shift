@@ -10,6 +10,44 @@ Given a video and a query like "Find when the bike disappears" or "Find when the
 4. uses bracketing + binary search to estimate the transition timestamp
 5. shows before/after evidence frames, confidence, explanation, and the search trace
 
+## Quick Start
+
+Everything application-specific is in this repo, but to run it locally you still need:
+
+- Node.js 20+
+- npm 10+
+- `ffmpeg` installed and available on `PATH`
+- a valid Gemini API key
+
+Setup:
+
+```bash
+npm install
+cp .env.example .env.local
+```
+
+Then add your `GEMINI_API_KEY` to `.env.local`.
+
+Run locally:
+
+```bash
+npm run dev
+```
+
+Build for production:
+
+```bash
+npm run build
+```
+
+Optional verification:
+
+```bash
+npm run lint
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
 ## Stack
 
 - Next.js App Router
