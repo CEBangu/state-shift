@@ -1,6 +1,6 @@
 # StateShift
 
-StateShift is a demo-ready Next.js MVP for localizing semantic state changes in long videos with Gemini and a search strategy that uses far fewer model calls than exhaustive frame-by-frame scanning.
+StateShift is an MVP for localizing semantic state changes in long videos with Gemini and a search strategy that uses far fewer model calls than exhaustive frame-by-frame scanning.
 
 Given a video and a query like "Find when the bike disappears" or "Find when the door opens", the app:
 
@@ -58,8 +58,8 @@ Open [http://localhost:3000](http://localhost:3000).
 ## How To Demo
 
 1. Start the app with `npm run dev`
-2. Upload a short local video with one clear state change
-3. Enter a query such as:
+2. Upload a local video with a state change (although the state can also change back)
+3. Enter a query that matches the action in the video, such as:
    - `Find when the bike disappears`
    - `Find when the package is removed`
    - `Find when the door opens`
