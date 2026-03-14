@@ -53,6 +53,34 @@ export function ResultView({ result }: ResultViewProps) {
             <span className="metric-label">Gemini Calls</span>
             <span className="metric-value">{result.totalGeminiCalls}</span>
           </div>
+          <div className="metric">
+            <span className="metric-label">Linear Scan</span>
+            <span className="metric-value">{result.linearScanGeminiCalls}</span>
+          </div>
+        </div>
+
+        <div className="comparison-panel">
+          <div className="comparison-copy">
+            <span className="pill">Efficiency check</span>
+            <h3>How much work did the search avoid?</h3>
+            <p>
+              A linear scan over every sampled frame would have needed{" "}
+              <strong>{result.linearScanGeminiCalls}</strong> Gemini calls. The search used{" "}
+              <strong>{result.totalGeminiCalls}</strong>, saving{" "}
+              <strong>{result.geminiCallsSaved}</strong> calls across{" "}
+              <strong>{result.totalSampledFrames}</strong> sampled frames.
+            </p>
+          </div>
+          <div className="comparison-stats">
+            <div className="comparison-stat">
+              <span className="metric-label">Saved</span>
+              <strong>{result.geminiCallsSaved}</strong>
+            </div>
+            <div className="comparison-stat">
+              <span className="metric-label">Reduction</span>
+              <strong>{Math.round(result.geminiReductionRatio * 100)}%</strong>
+            </div>
+          </div>
         </div>
 
         <div className="evidence-grid">

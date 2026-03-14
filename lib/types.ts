@@ -34,5 +34,14 @@ export type TransitionResult = {
   confidence: number;
   explanation: string;
   totalGeminiCalls: number;
+  totalSampledFrames: number;
+  linearScanGeminiCalls: number;
+  geminiCallsSaved: number;
+  geminiReductionRatio: number;
   searchTrace: SearchTraceEntry[];
 };
+
+export type TransitionSearchResult = Omit<
+  TransitionResult,
+  "totalSampledFrames" | "linearScanGeminiCalls" | "geminiCallsSaved" | "geminiReductionRatio"
+>;

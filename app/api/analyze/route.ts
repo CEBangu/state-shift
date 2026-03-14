@@ -65,8 +65,17 @@ export async function POST(request: Request) {
       query: query.trim(),
     });
 
+    const linearScanGeminiCalls = sampledFrames.length;
+    const geminiCallsSaved = Math.max(0, linearScanGeminiCalls - result.totalGeminiCalls);
+    const geminiReductionRatio =
+      linearScanGeminiCalls > 0 ? Number((geminiCallsSaved / linearScanGeminiCalls).toFixed(3)) : 0;
+
     return NextResponse.json({
       ...result,
+      totalSampledFrames: sampledFrames.length,
+      linearScanGeminiCalls,
+      geminiCallsSaved,
+      geminiReductionRatio,
       beforeFrame: toClientFrame(jobId, result.beforeFrame),
       afterFrame: toClientFrame(jobId, result.afterFrame),
     });

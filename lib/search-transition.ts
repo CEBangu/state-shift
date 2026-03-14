@@ -6,7 +6,7 @@ import {
   FrameClassification,
   FrameMetadata,
   SearchTraceEntry,
-  TransitionResult,
+  TransitionSearchResult,
 } from "@/lib/types";
 
 type SearchInput = {
@@ -264,7 +264,7 @@ function toClassifiedFrame(point: DecisivePoint): ClassifiedFrame {
 export async function searchTransition({
   sampledFrames,
   query,
-}: SearchInput): Promise<TransitionResult> {
+}: SearchInput): Promise<TransitionSearchResult> {
   if (sampledFrames.length < 2) {
     throw new Error("Need at least two sampled frames to localize a transition.");
   }
