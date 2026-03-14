@@ -67,6 +67,10 @@ Open [http://localhost:3000](http://localhost:3000).
 4. Keep the default sampling rate of `1` fps for the initial demo
 5. Run analysis and inspect the returned timestamp, evidence frames, confidence, and trace
 
+2 sample vidoes have been inlcuded in the repo: `bottle_knockover_30ms.mp4` and `bottle_updown_26s.mp4`. With the prompt "Find when the bottle gets
+knocked over", you can get an idea of the power of the Geminin powered algorithm. The point of the "updown" video is to show that the state transition can
+be found even if the state is reversed (i.e., even if the bottle is returned to its initial upright condition).
+
 ## Notes
 
 - The MVP assumes one main transition in a mostly monotonic video.
