@@ -39,58 +39,6 @@ Build for production:
 ```bash
 npm run build
 ```
-
-Optional verification:
-
-```bash
-npm run lint
-```
-
-Open [http://localhost:3000](http://localhost:3000).
-
-## Stack
-
-- Next.js App Router
-- TypeScript
-- Gemini API via `@google/genai`
-- `ffmpeg` for sampled frame extraction
-- Local filesystem storage for uploads and frames
-
-## Requirements
-
-- Node.js 20+
-- npm 10+
-- `ffmpeg` installed and available on `PATH`
-- Gemini API key
-
-## Environment Variables
-
-Create `.env.local` from `.env.example`:
-
-```bash
-cp .env.example .env.local
-```
-
-Required:
-
-- `GEMINI_API_KEY`
-
-Optional:
-
-- `GEMINI_MODEL` defaults to `gemini-2.5-flash`
-
-## Install
-
-```bash
-npm install
-```
-
-## Run
-
-```bash
-npm run dev
-```
-
 Open [http://localhost:3000](http://localhost:3000).
 
 ## How To Demo
@@ -115,13 +63,5 @@ be found even if the state is reversed (i.e., even if the bottle is returned to 
 - Uploaded videos and extracted frames are stored under `storage/jobs`.
 - The route handler reads the uploaded file into memory before persisting it, so use short demo videos locally.
 - `ffmpeg` is required; the app will fail fast if it is missing.
-
-## Verification
-
-Recommended local checks:
-
-```bash
-npm run build
-```
 
 If you want a quick extraction smoke test, you can generate a short sample video with `ffmpeg` and run the app against it.
